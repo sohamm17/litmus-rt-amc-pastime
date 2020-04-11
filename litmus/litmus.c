@@ -40,6 +40,31 @@ atomic_t rt_task_count 		= ATOMIC_INIT(0);
 atomic_t release_master_cpu = ATOMIC_INIT(NO_CPU);
 #endif
 
+// --SS-- defining and initializing system mode to be 0
+unsigned int System_Mode = 0;
+inline void change_system_mode(unsigned int m) {
+  System_Mode = m;
+  printk("-------System Mode changed to %u.----------\n", m);
+}
+
+inline unsigned int get_system_mode(void) {
+  return System_Mode;
+}
+
+inline void increment_system_mode(void) {
+  System_Mode = (System_Mode + 1) % HIGHEST_SYSTEM_MODE;
+}
+
+inline void decrement_system_mode(void) {
+  if(System_Mode > 0)
+    System_Mode--;
+}
+
+inline void initialize_system_mode(void) {
+  System_Mode = 0;
+  printk("-------System Mode initialized to 0.----------\n");
+}
+
 static struct kmem_cache * bheap_node_cache;
 extern struct kmem_cache * release_heap_cache;
 
@@ -132,7 +157,8 @@ asmlinkage long sys_set_rt_task_param(pid_t pid, struct rt_task __user * param)
 	if (min(tp.relative_deadline, tp.period) < tp.exec_cost) /*density check*/
 	{
 		printk(KERN_INFO "litmus: real-time task %d rejected "
-		       "because task density > 1.0\n", pid);
+		       "because task density > 1.0. period: %llu, exec: %llu\n", pid,
+           tp.period, tp.exec_cost);
 		goto out_unlock;
 	}
 	if (tp.cls != RT_CLASS_HARD &&

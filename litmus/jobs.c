@@ -20,6 +20,10 @@ static inline void setup_release(struct task_struct *t, lt_t release)
 	/* update job sequence number */
 	t->rt_param.job_params.job_no++;
 
+  /* reset the elonagated parameters --SS--*/
+  t->rt_param.job_params.is_elongated = 0;
+  t->rt_param.job_params.elongated_exec_cost = 0;
+
 	/* expose to user space */
 	if (has_control_page(t)) {
 		struct control_page* cp = get_control_page(t);
@@ -29,6 +33,10 @@ static inline void setup_release(struct task_struct *t, lt_t release)
 	}
 }
 
+// This function creates the next release time for a particular task t
+// In case of Sporadic tasks, it adds a specific time when a task should be
+// released. In case of periodic task, it adds the period to the last release
+// time --SS-- 
 void prepare_for_next_period(struct task_struct *t)
 {
 	BUG_ON(!t);
@@ -129,6 +137,13 @@ long complete_job_oneshot(void)
 	sched_trace_task_release(t);
 
 	return sleep_until_next_release();
+}
+
+/* This sets up the elongated parameters --SS--*/
+
+inline void set_elongated_cost(struct task_struct* t, lt_t new_cost){
+  t->rt_param.job_params.is_elongated = 1;
+  t->rt_param.job_params.elongated_exec_cost = new_cost;
 }
 
 /* assumes caller has disabled preemptions;

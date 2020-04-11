@@ -21,7 +21,7 @@ obj-y     = sched_plugin.o litmus.o \
 	    uncachedev.o \
 	    sched_gsn_edf.o \
 	    sched_psn_edf.o \
-	    sched_pfp.o
+#	    sched_pfp.o
 
 obj-$(CONFIG_PLUGIN_CEDF) += sched_cedf.o
 obj-$(CONFIG_PLUGIN_PFAIR) += sched_pfair.o
@@ -34,3 +34,5 @@ obj-$(CONFIG_SCHED_OVERHEAD_TRACE) += trace.o
 obj-y += sched_pres.o
 
 obj-y += reservations/
+obj-y += sched_demo.o
+obj-y += simple_heap.o

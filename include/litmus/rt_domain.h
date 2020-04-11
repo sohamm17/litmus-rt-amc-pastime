@@ -163,6 +163,7 @@ static inline void add_release_on(rt_domain_t* rt,
 }
 #endif
 
+// Checks if the ready_queue heap is empty for jobs pending --SS--
 static inline int __jobs_pending(rt_domain_t* rt)
 {
 	return !bheap_empty(&rt->ready_queue);

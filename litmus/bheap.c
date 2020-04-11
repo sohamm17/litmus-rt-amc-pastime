@@ -75,6 +75,7 @@ static  struct bheap_node* __bheap_reverse(struct bheap_node* h)
 	return h;
 }
 
+// Gets the minimum from the Binomial heap in node --SS--
 static  void __bheap_min(bheap_prio_t higher_prio, struct bheap* heap,
 			      struct bheap_node** prev, struct bheap_node** node)
 {
@@ -139,6 +140,7 @@ static  void __bheap_union(bheap_prio_t higher_prio, struct bheap* heap,
 	heap->head = h1;
 }
 
+// This function extracts the minimum and maintains the heap --SS--
 static struct bheap_node* __bheap_extract_min(bheap_prio_t higher_prio,
 					    struct bheap* heap)
 {
@@ -201,6 +203,8 @@ void bheap_union(bheap_prio_t higher_prio,
 struct bheap_node* bheap_peek(bheap_prio_t higher_prio,
 			    struct bheap* heap)
 {
+  // if heap's min is not cached it is cached by extract_min function
+  // --SS--
 	if (!heap->min)
 		heap->min = __bheap_extract_min(higher_prio, heap);
 	return heap->min;

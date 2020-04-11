@@ -114,14 +114,21 @@ struct reservation_config {
 
 struct rt_task {
 	lt_t 		exec_cost;
+	lt_t 		exec_cost_hi; // -- HI-mode exec time, only used for RTA now --SS--
 	lt_t 		period;
 	lt_t		relative_deadline;
 	lt_t		phase;
 	unsigned int	cpu;
 	unsigned int	priority;
-	task_class_t	cls;
+	task_class_t	cls; // SOFT, HARD or BEST_EFFORT --SS--
 	budget_policy_t  budget_policy;  /* ignored by pfair */
 	release_policy_t release_policy;
+  lt_t exec_cost_crit[4]; // Other optional exec_costs based on criticality--SS--
+  lt_t r_lo; // LO-response time calculated offline --SS--
+  lt_t r_star; // AMC*-response time calculated offline --SS--
+  // This is the maximum exec cost observed until no task
+  // has asked for incrased budget in LO-mode --SS--
+  lt_t max_exec_cost; 
 };
 
 /* don't export internal data structures to user space (liblitmus) */
@@ -161,6 +168,11 @@ struct rt_job {
 	 * -> used for tracing sporadic tasks. */
 	lt_t	last_suspension;
 #endif
+  // Indicates whether this job was elonagted by PAStime --SS--
+  int is_elongated;
+  
+  // what was the new elongated exec_cost --SS--
+  lt_t elongated_exec_cost;
 };
 
 struct pfair_param;

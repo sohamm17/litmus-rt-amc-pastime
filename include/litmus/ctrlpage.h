@@ -74,6 +74,7 @@ typedef enum {
 	LRT_wait_for_ts_release,
 	LRT_release_ts,
 	LRT_get_current_budget,
+	LRT_change_rt_task_param, // --SS-- dynamic change of task params
 } litmus_syscall_id_t;
 
 union litmus_syscall_args {

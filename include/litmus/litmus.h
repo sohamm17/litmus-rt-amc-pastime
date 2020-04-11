@@ -12,6 +12,17 @@
 extern atomic_t release_master_cpu;
 #endif
 
+extern unsigned int System_Mode; //System-wide mode MCS --SS--
+/* System Mode macros and inline functions for MCS --SS-- */
+#define HIGHEST_SYSTEM_MODE 2
+inline void change_system_mode(unsigned int m);
+inline unsigned int get_system_mode(void);
+inline void increment_system_mode(void);
+inline void decrement_system_mode(void);
+inline void initialize_system_mode(void);
+#define IS_LO_SYSTEM_MODE (get_system_mode() == 0)
+#define IS_HI_SYSTEM_MODE (get_system_mode() == 1)
+
 /* in_list - is a given list_head queued on some list?
  */
 static inline int in_list(struct list_head* list)
@@ -62,9 +73,17 @@ int litmus_be_migrate_to(int cpu);
 #define get_boost_start(t)      0
 #endif
 
-
 /* task_params macros */
-#define get_exec_cost(t)  	(tsk_rt(t)->task_params.exec_cost)
+// --SS-- Here I am getting exec_cost based on the current System Mode
+// only in case System_Mode is greater than 0
+//#define get_exec_cost(t)  (tsk_rt(t)->task_params.exec_cost)
+/*#define get_exec_cost(t)  	(!System_Mode ? tsk_rt(t)->task_params.exec_cost \
+  : tsk_rt(t)->task_params.exec_cost_crit[System_Mode - 1])*/
+#define get_exec_cost_lo(t)  (tsk_rt(t)->task_params.exec_cost)
+#define get_exec_cost_hi(t)  (tsk_rt(t)->task_params.exec_cost_hi)
+#define get_exec_cost(t) (get_system_mode() == 0 ?\
+get_exec_cost_lo(t) : get_exec_cost_hi(t))
+
 #define get_rt_period(t)	(tsk_rt(t)->task_params.period)
 #define get_rt_relative_deadline(t)	(tsk_rt(t)->task_params.relative_deadline)
 #define get_rt_phase(t)		(tsk_rt(t)->task_params.phase)
@@ -72,12 +91,16 @@ int litmus_be_migrate_to(int cpu);
 #define get_priority(t) 	(tsk_rt(t)->task_params.priority)
 #define get_class(t)        (tsk_rt(t)->task_params.cls)
 #define get_release_policy(t) (tsk_rt(t)->task_params.release_policy)
+#define get_r_lo(t) (tsk_rt(t)->task_params.r_lo)
+#define get_r_star(t) (tsk_rt(t)->task_params.r_star)
 
 /* job_param macros */
 #define get_exec_time(t)    (tsk_rt(t)->job_params.exec_time)
 #define get_deadline(t)		(tsk_rt(t)->job_params.deadline)
 #define get_release(t)		(tsk_rt(t)->job_params.release)
 #define get_lateness(t)		(tsk_rt(t)->job_params.lateness)
+#define is_elongated(t)		(tsk_rt(t)->job_params.is_elongated)
+#define get_elongated_exec_cost(t)		(tsk_rt(t)->job_params.elongated_exec_cost)
 
 /* release policy macros */
 #define is_periodic(t)		(get_release_policy(t) == TASK_PERIODIC)

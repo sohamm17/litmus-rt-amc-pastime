@@ -9,5 +9,6 @@ void inferred_sporadic_job_release_at(struct task_struct *t, lt_t when);
 long default_wait_for_release_at(lt_t release_time);
 long complete_job(void);
 long complete_job_oneshot(void);
+inline void set_elongated_cost(struct task_struct* t, lt_t new_cost);
 
 #endif

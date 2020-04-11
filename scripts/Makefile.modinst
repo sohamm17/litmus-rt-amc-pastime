@@ -10,6 +10,7 @@ include scripts/Kbuild.include
 #
 
 __modules := $(sort $(shell grep -h '\.ko$$' /dev/null $(wildcard $(MODVERDIR)/*.mod)))
+
 modules := $(patsubst %.o,%.ko,$(wildcard $(__modules:.ko=.o)))
 
 PHONY += $(modules)
@@ -32,7 +33,10 @@ ext-mod-dir = $(INSTALL_MOD_DIR)$(subst $(patsubst %/,%,$(KBUILD_EXTMOD)),,$(@D)
 modinst_dir = $(if $(KBUILD_EXTMOD),$(ext-mod-dir),kernel/$(@D))
 
 $(modules):
+	echo $(MODVERDIR)
+	echo $(__modules)
 	$(call cmd,modules_install,$(MODLIB)/$(modinst_dir))
+
 
 
 # Declare the contents of the .PHONY variable as phony.  We keep that
